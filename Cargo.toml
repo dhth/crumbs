@@ -1,0 +1,24 @@
+[package]
+name = "crumbs"
+version = "0.1.0-alpha.1"
+edition = "2024"
+license = "MIT"
+keywords = [
+    "ai-agents",
+    "ai",
+    "cli",
+    "coding-agents",
+]
+categories = [
+    "command-line-utilities",
+]
+exclude = [
+    ".github",
+    "justfile",
+]
+
+[dependencies]
+
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
