@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS sessions (
+CREATE TABLE sessions (
     id INTEGER PRIMARY KEY NOT NULL,
     agent_name TEXT NOT NULL,
     title TEXT NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS sessions (
     updated_at INTEGER NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS crumbs (
+CREATE TABLE crumbs (
     id INTEGER PRIMARY KEY NOT NULL,
     session_id INTEGER NOT NULL,
     message TEXT NOT NULL,

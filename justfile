@@ -26,6 +26,13 @@ sqlx-check:
 sqlx-prepare:
     cargo sqlx prepare
 
+sqlx-migrate:
+    cargo sqlx migrate run
+
+sqlx-init:
+    cargo sqlx database create
+    just sqlx-migrate
+
 fmt:
     cargo fmt --all
 

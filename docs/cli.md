@@ -25,7 +25,7 @@ include the returned `session_id`.
 
 - `agent_name`: the reporting agent or harness name, such as `claude-code` or
   `codex`
-- `task_title`: a short human-readable title describing the task
+- `title`: a short human-readable title describing the session
 
 ### Derived By The Tool
 

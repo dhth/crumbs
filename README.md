@@ -5,7 +5,7 @@
   </p>
 </p>
 
-`crumbs` lets you view the progress made by your AI agents over long running
+`crumbs` lets you view the progress made by your AI agents over long-running
 tasks.
 
 > [!NOTE]

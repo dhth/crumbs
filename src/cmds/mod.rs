@@ -67,6 +67,7 @@ pub async fn handle_register_session(
         .and_then(|name| name.to_str())
         .map(str::to_owned)
         .context("couldn't determine project name from current directory")?;
+    // TODO: log this error when tracing is set up
     let branch = current_branch(&path).unwrap_or(None);
     let timestamp = unix_timestamp_now().context("couldn't get current timestamp")?;
 

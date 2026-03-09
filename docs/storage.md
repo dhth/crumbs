@@ -22,7 +22,7 @@ The `sessions` table holds durable identity, current state, and session
 metadata.
 
 Expected fields include:
-- `session_id`
+- `id`
 - `agent_name`
 - `title`
 - `project_name`
