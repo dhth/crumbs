@@ -13,7 +13,11 @@ categories = [
     "command-line-utilities",
 ]
 exclude = [
+    ".coderabbit.yaml",
+    ".gitattributes",
     ".github",
+    "AGENTS.md",
+    "docs",
     "justfile",
 ]
 
