@@ -9,6 +9,8 @@ alias lf := lint-fix
 alias r := run
 alias t := test
 
+export DATABASE_URL := 'sqlite://db/crumbs.db'
+
 @default:
     just --choose
 
@@ -17,6 +19,19 @@ build:
 
 check:
     cargo check
+
+sqlx-check:
+    cargo sqlx prepare --check
+
+sqlx-prepare:
+    cargo sqlx prepare
+
+sqlx-migrate:
+    cargo sqlx migrate run
+
+sqlx-init:
+    cargo sqlx database create
+    just sqlx-migrate
 
 fmt:
     cargo fmt --all
@@ -46,4 +61,5 @@ test:
     just check
     just fmt
     just lint
+    just sqlx-check
     just test
