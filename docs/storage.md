@@ -8,8 +8,6 @@ This is intended to support:
 - multiple agent sessions writing progress concurrently
 - a simple relational model for sessions and crumb history
 
-The expected Rust integration is through `sqlx`.
-
 ## Core Data Model
 
 The initial storage model uses two relational tables:

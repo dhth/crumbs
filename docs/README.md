@@ -1,4 +1,4 @@
-# Crumbs Docs
+# Crumbs
 
 This directory documents `crumbs`, a local CLI and TUI for surfacing progress
 from coding agents.

@@ -38,25 +38,3 @@ The tool is built around a few constraints:
 
 In practice, the expected update shape is closer to a short status summary than
 to raw chain-of-thought. A one-line update or short paragraph is enough.
-
-## Design Principles For The First Cut
-
-- Optimize for quick human awareness, not detailed inspection.
-- Make it easy to distinguish concurrent agent sessions.
-- Prefer simple, readable status signals over verbose output.
-- Avoid adding control, intervention, or orchestration features too early.
-- Keep the initial implementation narrow so it can prove whether the dashboard
-  is useful during real coding sessions.
-
-## Decisions Captured So Far
-
-The tool is now defined in a few important areas:
-- sessions are explicitly registered and identified by a tool-generated
-  `session_id`
-- agents provide `agent_name` and `task_title` at registration time
-- progress is reported through append-only log events
-- the core state model is `working`, `blocked`, and `done`
-- the default TUI opens into a crumb-first List + Detail TeamView
-
-More detailed questions still remain, but the core tool shape is now defined
-well enough to guide implementation.
