@@ -50,6 +50,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
+    env:
+      SQLX_OFFLINE: true
     steps:
       - uses: actions/checkout@v6
       - name: Install toolchain
@@ -64,10 +66,22 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
+    env:
+      SQLX_VERSION: 0.8.6
+      SQLX_FEATURES: sqlite
+      DATABASE_URL: sqlite://db/crumbs.db
     steps:
       - uses: actions/checkout@v6
       - name: Install toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Install sqlx-cli
+        run: cargo install sqlx-cli --version=${{ env.SQLX_VERSION }} --features ${{ env.SQLX_FEATURES }} --no-default-features --locked
+      - name: Create test database
+        run: |
+          mkdir db
+          cargo sqlx database create
+          cargo sqlx migrate run
+          cargo sqlx prepare --check
       - name: Test
         env:
           RUST_BACKTRACE: 0
@@ -77,6 +91,8 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.code == 'true' }}
     runs-on: ubuntu-latest
+    env:
+      SQLX_OFFLINE: true
     steps:
       - uses: actions/checkout@v6
       - name: Install toolchain
