@@ -1,0 +1,77 @@
+reviews:
+  path_instructions:
+    - path: "src/**"
+      instructions: |
+        Read AGENTS.md before doing anything.
+
+        ## Review Philosophy
+
+        - Only comment when you have HIGH CONFIDENCE (>80%) that an issue exists
+        - Be concise: one sentence per comment when possible
+        - Focus on actionable feedback, not observations
+
+        ## Priority Areas (Review These)
+
+        ### Security & Safety
+
+        - Missing input validation
+        - Improper error handling
+
+        ### Correctness Issues
+
+        - Logic errors that could cause panics or incorrect behavior
+        - Race conditions in async code (tokio)
+        - Resource leaks
+        - Incorrect error propagation
+        - Missing `.await` on futures
+        - Blocking operations in async contexts
+
+        ### Architecture & Patterns
+
+        - Code that violates existing patterns in the codebase
+        - Missing error handling
+        - New dependencies that duplicate existing functionality
+        - Rust patterns: prefer `?` over manual error handling, use iterators over loops
+            where idiomatic
+
+        ## CI Pipeline Context
+
+        **Important**: CI performs the following checks, so do not flag these in your
+        review, they will become apparent when the checks fail.
+
+        ### What the CI Checks (`.github/workflows/pr.yml`)
+
+        **Rust checks:**
+        - `cargo fmt --all -- --check` - Code formatting
+        - `cargo clippy` - Linting (includes unwrap/expect denial)
+        - `cargo test` - All tests
+        - `cargo sqlx prepare --check` - sqlx checks
+        - `cargo build` - Compilation
+
+        ## Skip These (Low Value)
+
+        Do not comment on:
+
+        - **Style/formatting** - CI handles this (rustfmt)
+        - **Clippy warnings** - CI handles this
+        - **Test failures** - CI handles this
+        - **Minor naming suggestions** - unless truly confusing
+        - **Suggestions to add comments** - for self-documenting code
+        - **Refactoring suggestions** - unless there's a clear bug or maintainability
+            issue
+        - **Multiple issues in one comment** - choose the single most critical issue
+        - **Missing tests** - this is a prototype, tests are optional
+        - **Documentation suggestions** - unless API contracts are unclear
+
+        ## Response Format
+
+        When you identify an issue:
+
+        1. **State the problem** (1 sentence)
+        2. **Why it matters** (1 sentence, only if not obvious)
+        3. **Suggested fix** (code snippet or specific action)
+
+        ## When to Stay Silent
+
+        If you're uncertain whether something is an issue, don't comment. False
+        positives create noise and reduce trust in the review process.
