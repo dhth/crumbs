@@ -52,7 +52,7 @@ to discover or pass them during registration.
 After registration, agents report progress with an append-only log command:
 
 ```text
-crumbs log <session-id> <message> [--state <working|blocked|done>]
+crumbs log <session-id> <message> [--state <working|blocked|done>] [--confidence <0-100>]
 ```
 
 This command appends a new log event to the session history.
@@ -63,6 +63,8 @@ This command appends a new log event to the session history.
 - `--state` is optional.
 - If `--state` is omitted, the session keeps its previous state.
 - If `--state` is provided, the session's current state changes to that value.
+- `--confidence` is optional. It accepts an integer from 0 to 100 representing
+  the agent's confidence in completing the overall session goal successfully.
 - Every `log` call is append-only; past entries are not edited or replaced.
 - Successful `log` calls produce no stdout output.
 - Failed `log` calls should return a non-zero exit code and a short stderr
@@ -93,8 +95,8 @@ Response shape:
 Example log calls:
 
 ```text
-crumbs log 42 "Inspecting current state management code" --state working
-crumbs log 42 "Need a decision on migration strategy" --state blocked
+crumbs log 42 "Inspecting current state management code" --state working --confidence 80
+crumbs log 42 "Need a decision on migration strategy" --state blocked --confidence 40
 crumbs log 42 "Finished refactor and validated tests" --state done
 ```
 
@@ -141,6 +143,7 @@ Returns a JSON array of all log entries (crumbs) for the specified session, orde
     "session_id": 3,
     "message": "Added sessions and list subcommands",
     "state": null,
+    "confidence": null,
     "created_at": 1773052856
   },
   {
@@ -148,7 +151,16 @@ Returns a JSON array of all log entries (crumbs) for the specified session, orde
     "session_id": 3,
     "message": "Implementation complete",
     "state": "done",
+    "confidence": 95,
     "created_at": 1773052937
   }
 ]
 ```
+
+## Open The TUI
+
+```text
+crumbs tui [--theme <name>]
+```
+
+Opens the terminal UI for viewing sessions and crumbs interactively.

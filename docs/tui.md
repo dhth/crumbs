@@ -28,33 +28,31 @@ This layout is intended to help the user do two things at once:
 +------------------------------------------------------------------------------------+
 | Sessions (7)         | Crumbs: Refactor session state handling                     |
 |----------------------|-------------------------------------------------------------|
-| > [working]          | 14:03  [working]  Inspecting state handling                 |
-|   claude-code        | 14:05             Comparing two refactor approaches         |
-|   Refactor sessio... | 14:07  [blocked]  Need a decision on migration strategy     |
-|   12s ago            | 14:10  [working]  Resuming after migration decision         |
-|                      | 14:15             Tightening session list width             |
-|   [blocked]          | 14:20  [blocked]  Waiting on final pane layout choice       |
-|   codex              | 14:24  [working]  Continuing after layout was chosen        |
-|   Design persiste... | 14:28             Moving metadata below crumb timeline      |
-|   1m ago             | 14:31             Pressure-testing readability              |
-|                      | 14:35  [done   ]  Documented default TUI layout             |
-|   [working]          |                                                             |
-|   open-code          |                                                             |
-|   Prototype event... |                                                             |
-|   3m ago             |                                                             |
+| > Refactor sessio... | [working]  C80  Inspecting state handling                   |
+|   opencode           |            C80  Comparing two refactor approaches           |
+|   [working]          | [blocked]  C40  Need a decision on migration strategy       |
+|   12s ago            | [working]  C60  Resuming after migration decision           |
+|                      |            C70  Tightening session list width               |
+|   Design persiste... | [blocked]  C30  Waiting on final pane layout choice         |
+|   pi                 | [working]  C75  Continuing after layout was chosen          |
+|   [done]             |            C85  Moving metadata below crumb timeline        |
+|   1m ago             |            C90  Pressure-testing readability                |
+|                      | [done]          Documented default TUI layout               |
 |                      |                                                             |
-|   [done]             |-------------------------------------------------------------|
-|   claude-code        | Metadata                                                    |
-|   Fix cargo fmt f... | task       Refactor session state handling                  |
-|   6m ago             | agent      claude-code                                      |
+|                      |                                                             |
+|                      |                                                             |
+|                      |                                                             |
+|                      |                                                             |
+|                      |-------------------------------------------------------------|
+|                      | Metadata                                                    |
+|                      | task       Refactor session state handling                  |
+|                      | agent      claude-code                                      |
 |                      | project    crumbs                                           |
-|   [working]          | path       /Users/.../projects/crumbs                       |
-|   codex              | branch     feature/tui-status                               |
-|   Add session his... | state      done                                             |
-|   7m ago             | started    14:03:11                                         |
+|                      | path       /Users/.../projects/crumbs                       |
+|                      | branch     feature/tui-status                               |
+|                      | state      done                                             |
+|                      | started    14:03:11                                         |
 |                      | last crumb 12s ago                                          |
-+------------------------------------------------------------------------------------+
-| status bar (user messages go here)                                                 |
 +------------------------------------------------------------------------------------+
 | crumbs                                                                             |
 +------------------------------------------------------------------------------------+
@@ -84,14 +82,17 @@ The upper-right pane is the main reading surface.
 
 It shows:
 - the selected session's crumb history
-- timestamps for each crumb
 - state when a crumb includes a state transition
+- confidence when a crumb includes a confidence value, displayed as `C<value>`
 
 The crumb pane receives most of the available space in the layout.
 
 State changes should be visible in the crumb list when they occur. They are
 useful because they make transitions into `blocked` or `done` obvious in the
 history without requiring the user to infer them from message text alone.
+
+Confidence is displayed with color interpolation from the error color (low
+confidence) to the success color (high confidence).
 
 ### Lower-Right Metadata Pane
 
@@ -108,14 +109,14 @@ The lower-right pane shows supporting session context, such as:
 This pane is important for disambiguation, but it is not the primary reading
 surface.
 
-### Status Bar And Footer
+### Footer
 
-The layout also includes two bottom rows:
-- a status bar for user-facing messages, similar to a Vim status line
-- a footer row for showing various indicators to the user
+The layout includes a footer row at the bottom that shows:
+- the application name
+- user-facing messages such as theme change confirmations or error notices
+- status indicators
 
-These rows reserve space for feedback and future UI signals without changing
-the main pane layout.
+The footer reserves space for feedback without changing the main pane layout.
 
 ## Deferred Alternate Views
 
@@ -128,3 +129,39 @@ These view ideas are deferred for now:
 
 These may still become useful secondary views later, but they are not the
 default opening experience.
+
+## Key Bindings
+
+Read `src/tui/help.rs`.
+
+## Themes
+
+The TUI ships with nine built-in color themes. The starting theme can be set
+with the `--theme` flag when launching the TUI. Themes can also be cycled at
+runtime with `{` and `}`.
+
+## Time Display
+
+Timestamps in the session list and metadata pane support two display modes:
+
+- **relative** (default) — shows how long ago an event occurred, such as
+  `12s ago` or `3m ago`
+- **absolute** — shows the full date and time, such as `2026-03-13 14:03:11`
+
+Pressing `t` toggles between the two modes.
+
+## Session Markers
+
+When sessions are refreshed, the session list marks entries that have changed
+since the last refresh:
+
+- `[new]` — a session that was not present in the previous list
+- `[updated]` — a session whose `updated_at` timestamp has advanced
+
+Selecting a session clears its marker.
+
+## Minimum Terminal Dimensions
+
+The TUI requires a minimum terminal size of 80 columns by 30 rows. If the
+terminal is smaller, a message is shown asking the user to resize. Normal
+rendering resumes once the terminal meets the minimum dimensions.

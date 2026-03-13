@@ -49,6 +49,7 @@ Expected fields include:
 - `session_id` foreign key
 - `message`
 - optional `state`
+- optional `confidence`
 - `created_at`
 
 Notes:
