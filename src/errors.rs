@@ -35,9 +35,6 @@ impl AppError {
                     AddCrumbError::SessionDoesNotExist(_) => Some(
                         r#"Tip: Use the session ID returned by 'crumbs register', or run 'crumbs sessions' to view all sessions."#,
                     ),
-                    AddCrumbError::SessionAlreadyDone(_) => Some(
-                        r#"Tip: If you want to log more crumbs to this session, you'll have to change its state by passing the --state flag."#,
-                    ),
                     AddCrumbError::Sqlx(_) => None,
                 },
                 LogCrumbError::Unexpected(_) => None,

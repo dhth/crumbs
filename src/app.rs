@@ -19,14 +19,18 @@ pub async fn run() -> Result<(), AppError> {
             session_id,
             message,
             state,
+            confidence,
         } => {
-            crate::cmds::handle_log_crumb(&pool, session_id, message, state).await?;
+            crate::cmds::handle_log_crumb(&pool, session_id, message, state, confidence).await?;
         }
         CrumbsCommand::Sessions => {
             crate::cmds::handle_list_sessions(&pool).await?;
         }
         CrumbsCommand::List { session_id } => {
             crate::cmds::handle_list_crumbs(&pool, session_id).await?;
+        }
+        CrumbsCommand::Tui { theme } => {
+            crate::cmds::handle_tui(pool, theme).await?;
         }
     }
 

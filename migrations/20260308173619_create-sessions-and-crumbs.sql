@@ -15,6 +15,7 @@ CREATE TABLE crumbs (
     session_id INTEGER NOT NULL,
     message TEXT NOT NULL,
     state TEXT,
+    confidence INTEGER CHECK (confidence >= 0 AND confidence <= 100),
     created_at INTEGER NOT NULL,
     FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
 );

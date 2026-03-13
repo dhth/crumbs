@@ -5,8 +5,6 @@ use sqlx::{Pool, Sqlite};
 pub enum AddCrumbError {
     #[error("session with id '{0}' does not exist")]
     SessionDoesNotExist(i64),
-    #[error("session with id '{0}' is already done")]
-    SessionAlreadyDone(i64),
     #[error(transparent)]
     Sqlx(#[from] sqlx::Error),
 }
@@ -24,16 +22,18 @@ pub async fn add_crumb(pool: &Pool<Sqlite>, crumb: CrumbToSave) -> Result<(), Ad
         session_id,
         message,
         state,
+        confidence,
         timestamp,
     } = crumb;
 
     let session_id_value = session_id.get();
     let crumb_message = message.as_str();
+    let confidence = confidence.map(|confidence| i64::from(confidence.get()));
     let mut tx = pool.begin().await?;
 
     let saved_session = sqlx::query!(
         r#"
-        SELECT state as "state: SessionState"
+        SELECT id
         FROM sessions
         WHERE id = ?
         "#,
@@ -42,12 +42,7 @@ pub async fn add_crumb(pool: &Pool<Sqlite>, crumb: CrumbToSave) -> Result<(), Ad
     .fetch_optional(&mut *tx)
     .await?;
 
-    let saved_session =
-        saved_session.ok_or(AddCrumbError::SessionDoesNotExist(session_id_value))?;
-
-    if saved_session.state == SessionState::Done {
-        return Err(AddCrumbError::SessionAlreadyDone(session_id_value));
-    }
+    saved_session.ok_or(AddCrumbError::SessionDoesNotExist(session_id_value))?;
 
     sqlx::query!(
         r#"
@@ -55,12 +50,14 @@ pub async fn add_crumb(pool: &Pool<Sqlite>, crumb: CrumbToSave) -> Result<(), Ad
             session_id,
             message,
             state,
+            confidence,
             created_at
-        ) VALUES (?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?)
         "#,
         session_id_value,
         crumb_message,
         state,
+        confidence,
         timestamp,
     )
     .execute(&mut *tx)
@@ -128,6 +125,7 @@ pub async fn get_crumbs(
             session_id,
             message,
             state as "state: SessionState",
+            confidence,
             created_at
         FROM crumbs
         WHERE session_id = ?

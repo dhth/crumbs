@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        INSERT INTO crumbs (\n            session_id,\n            message,\n            state,\n            confidence,\n            created_at\n        ) VALUES (?, ?, ?, ?, ?)\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": []
+  },
+  "hash": "638f200544903d1719358a64d6c07b1937f61f5312e457dc0483d19253711284"
+}

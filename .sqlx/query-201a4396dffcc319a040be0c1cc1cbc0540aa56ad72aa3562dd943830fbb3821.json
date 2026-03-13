@@ -1,6 +1,6 @@
 {
   "db_name": "SQLite",
-  "query": "\n        SELECT\n            id,\n            session_id,\n            message,\n            state as \"state: SessionState\",\n            created_at\n        FROM crumbs\n        WHERE session_id = ?\n        ORDER BY created_at ASC\n        ",
+  "query": "\n        SELECT\n            id,\n            session_id,\n            message,\n            state as \"state: SessionState\",\n            confidence,\n            created_at\n        FROM crumbs\n        WHERE session_id = ?\n        ORDER BY created_at ASC\n        ",
   "describe": {
     "columns": [
       {
@@ -24,8 +24,13 @@
         "type_info": "Text"
       },
       {
-        "name": "created_at",
+        "name": "confidence",
         "ordinal": 4,
+        "type_info": "Integer"
+      },
+      {
+        "name": "created_at",
+        "ordinal": 5,
         "type_info": "Integer"
       }
     ],
@@ -37,8 +42,9 @@
       false,
       false,
       true,
+      true,
       false
     ]
   },
-  "hash": "44d278d7c896965a84ed079fbe29784463c8aeaa75ee704da622bb82ddfdd122"
+  "hash": "201a4396dffcc319a040be0c1cc1cbc0540aa56ad72aa3562dd943830fbb3821"
 }
