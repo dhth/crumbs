@@ -87,6 +87,27 @@ impl TryFrom<String> for CrumbMessage {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct Confidence(u8);
+
+impl Confidence {
+    pub fn get(self) -> u8 {
+        self.0
+    }
+}
+
+impl TryFrom<u8> for Confidence {
+    type Error = &'static str;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        if value > 100 {
+            return Err("confidence must be between 0 and 100");
+        }
+
+        Ok(Self(value))
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Type, ValueEnum)]
 #[sqlx(type_name = "TEXT")]
 #[sqlx(rename_all = "snake_case")]
@@ -127,6 +148,7 @@ pub struct Crumb {
     pub session_id: i64,
     pub message: String,
     pub state: Option<SessionState>,
+    pub confidence: Option<i64>,
     pub created_at: i64,
 }
 
@@ -135,5 +157,6 @@ pub struct CrumbToSave {
     pub session_id: SessionId,
     pub message: CrumbMessage,
     pub state: Option<SessionState>,
+    pub confidence: Option<Confidence>,
     pub timestamp: i64,
 }

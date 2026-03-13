@@ -1,9 +1,12 @@
+use crate::config::ThemeName;
 use crate::domain::{
-    AgentName, CrumbMessage, CrumbToSave, SessionId, SessionState, SessionTitle, SessionToSave,
+    AgentName, Confidence, CrumbMessage, CrumbToSave, SessionId, SessionState, SessionTitle,
+    SessionToSave,
 };
 use crate::persistence::{
     AddCrumbError, GetCrumbsError, add_crumb, create_session, get_crumbs, get_sessions,
 };
+use crate::tui::TuiConfig;
 use crate::utils::git::current_branch;
 use anyhow::Context;
 use serde::Serialize;
@@ -97,9 +100,14 @@ pub async fn handle_log_crumb(
     session_id: i64,
     message: String,
     state: Option<SessionState>,
+    confidence: Option<u8>,
 ) -> Result<(), LogCrumbError> {
     let session_id = SessionId::try_from(session_id).map_err(LogCrumbError::InvalidInput)?;
     let message = CrumbMessage::try_from(message).map_err(LogCrumbError::InvalidInput)?;
+    let confidence = confidence
+        .map(Confidence::try_from)
+        .transpose()
+        .map_err(LogCrumbError::InvalidInput)?;
 
     let timestamp = unix_timestamp_now().context("couldn't get current timestamp")?;
 
@@ -107,6 +115,7 @@ pub async fn handle_log_crumb(
         session_id,
         message,
         state,
+        confidence,
         timestamp,
     };
 
@@ -138,6 +147,10 @@ pub async fn handle_list_crumbs(
     );
 
     Ok(())
+}
+
+pub async fn handle_tui(pool: Pool<Sqlite>, theme: ThemeName) -> anyhow::Result<()> {
+    crate::tui::run(pool, TuiConfig { theme }).await
 }
 
 fn unix_timestamp_now() -> anyhow::Result<i64> {

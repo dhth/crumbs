@@ -1,3 +1,4 @@
+use crate::config::ThemeName;
 use crate::domain::SessionState;
 use clap::{Parser, Subcommand};
 
@@ -31,6 +32,9 @@ pub enum CrumbsCommand {
         /// session state to set
         #[arg(short = 's', long = "state")]
         state: Option<SessionState>,
+        /// confidence in completing the overall session goal successfully
+        #[arg(short = 'c', long = "confidence", value_name = "0-100")]
+        confidence: Option<u8>,
     },
     /// list all sessions
     Sessions,
@@ -39,5 +43,11 @@ pub enum CrumbsCommand {
         /// id of the session to list crumbs for
         #[arg(value_name = "ID")]
         session_id: i64,
+    },
+    /// open the terminal UI
+    Tui {
+        /// color theme for the TUI
+        #[arg(short = 't', long = "theme", value_enum, default_value_t = ThemeName::default())]
+        theme: ThemeName,
     },
 }

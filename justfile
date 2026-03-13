@@ -10,6 +10,7 @@ alias r := run
 alias t := test
 
 export DATABASE_URL := 'sqlite://db/crumbs.db'
+export CRUMBS_DEBUG := '1'
 
 @default:
     just --choose

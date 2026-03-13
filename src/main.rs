@@ -1,9 +1,11 @@
 mod app;
 mod args;
 mod cmds;
+mod config;
 mod domain;
 mod errors;
 mod persistence;
+mod tui;
 mod utils;
 
 #[tokio::main]
