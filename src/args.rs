@@ -1,11 +1,15 @@
 use crate::config::ThemeName;
 use crate::domain::SessionState;
 use clap::{Parser, Subcommand};
+use std::path::PathBuf;
 
 /// crumbs lets your AI agents report progress to you
 #[derive(Parser, Debug)]
 #[command(author, about, long_about = None)]
 pub struct Args {
+    /// path to crumbs' database file
+    #[arg(short = 'd', long = "db-path", value_name = "PATH", value_parser = parse_db_path, global = true)]
+    pub db_path: Option<PathBuf>,
     #[command(subcommand)]
     pub command: CrumbsCommand,
 }
@@ -50,4 +54,13 @@ pub enum CrumbsCommand {
         #[arg(short = 't', long = "theme", value_enum, default_value_t = ThemeName::default())]
         theme: ThemeName,
     },
+}
+
+fn parse_db_path(value: &str) -> Result<PathBuf, String> {
+    let path = PathBuf::from(value);
+
+    match path.extension().and_then(|extension| extension.to_str()) {
+        Some("db") => Ok(path),
+        _ => Err(String::from("database path must end with '.db'")),
+    }
 }

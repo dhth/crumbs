@@ -4,11 +4,12 @@ use crate::persistence::get_db_pool;
 use anyhow::Context;
 use clap::Parser;
 use etcetera::{BaseStrategy, choose_base_strategy};
+use std::path::{Path, PathBuf};
 
 pub async fn run() -> Result<(), AppError> {
     let args = Args::parse();
 
-    let crumbs_db_url = get_default_db_url()?;
+    let crumbs_db_url = get_db_url(args.db_path)?;
     let pool = get_db_pool(&crumbs_db_url).await?;
 
     match args.command {
@@ -37,19 +38,39 @@ pub async fn run() -> Result<(), AppError> {
     Ok(())
 }
 
-fn get_default_db_url() -> anyhow::Result<String> {
+fn get_db_url(db_path: Option<PathBuf>) -> anyhow::Result<String> {
+    let db_path = match db_path {
+        Some(db_path) => db_path,
+        None => get_default_db_path()?,
+    };
+
+    ensure_parent_dir_exists(&db_path)?;
+
+    Ok(format!("sqlite://{}", db_path.to_string_lossy()))
+}
+
+fn get_default_db_path() -> anyhow::Result<PathBuf> {
     let strategy = choose_base_strategy().context("couldn't determine your data directory")?;
     let data_dir = strategy.data_dir().join("crumbs");
 
-    std::fs::create_dir_all(&data_dir).with_context(|| {
+    Ok(data_dir.join("crumbs.db"))
+}
+
+fn ensure_parent_dir_exists(path: &Path) -> anyhow::Result<()> {
+    let Some(parent_dir) = path.parent() else {
+        return Ok(());
+    };
+
+    if parent_dir.as_os_str().is_empty() {
+        return Ok(());
+    }
+
+    std::fs::create_dir_all(parent_dir).with_context(|| {
         format!(
-            "couldn't create crumbs' data directory: {}",
-            data_dir.to_string_lossy()
+            "couldn't create database directory: {}",
+            parent_dir.to_string_lossy()
         )
     })?;
 
-    Ok(format!(
-        "sqlite://{}",
-        data_dir.join("crumbs.db").to_string_lossy()
-    ))
+    Ok(())
 }
