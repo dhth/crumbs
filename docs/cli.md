@@ -164,3 +164,11 @@ crumbs tui [--theme <name>]
 ```
 
 Opens the terminal UI for viewing sessions and crumbs interactively.
+
+## Overriding Database Path
+
+All commands accept an optional global database path override:
+
+```text
+crumbs [--db-path <path-to-file.db>] <command>
+```
