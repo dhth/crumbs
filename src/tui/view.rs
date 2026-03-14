@@ -356,7 +356,7 @@ fn crumbs_title(model: &Model, title_color: Color, theme: &Theme) -> Line<'stati
 fn crumb_row(crumb: &Crumb, theme: &Theme) -> Row<'static> {
     let state_cell = Cell::from(match crumb.state {
         Some(state) => Line::from(Span::styled(
-            format!("[{}]", session_state_label(state)),
+            format!(" {} ", session_state_label(state)),
             Style::default()
                 .bg(session_state_color(state, theme))
                 .fg(theme.background)
@@ -426,7 +426,7 @@ fn session_list_item(
 ) -> ListItem<'static> {
     let session = &item.session;
     let mut state_spans = vec![Span::styled(
-        format!("[{}]", session_state_label(session.state)),
+        format!(" {} ", session_state_label(session.state)),
         Style::default()
             .bg(session_state_color(session.state, theme))
             .fg(theme.background)
@@ -524,15 +524,15 @@ fn session_state_label(state: SessionState) -> &'static str {
     match state {
         SessionState::Working => "working",
         SessionState::Blocked => "blocked",
-        SessionState::Done => "done",
+        SessionState::Done => " done  ",
     }
 }
 
 fn session_state_color(state: SessionState, theme: &Theme) -> Color {
     match state {
-        SessionState::Working => theme.info,
+        SessionState::Working => theme.success,
         SessionState::Blocked => theme.error,
-        SessionState::Done => theme.success,
+        SessionState::Done => theme.info,
     }
 }
 
