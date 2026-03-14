@@ -58,6 +58,8 @@ pub fn update(model: &mut Model, msg: Msg) -> Vec<Cmd> {
         Msg::RefreshSessions => cmds.push(Cmd::LoadSessions),
         Msg::QuitImmediately => model.running_state = RunningState::Done,
         Msg::ScrollCrumbsDown => model.scroll_crumbs_down(),
+        Msg::ScrollCrumbsToBottom => model.scroll_crumbs_to_bottom(),
+        Msg::ScrollCrumbsToTop => model.scroll_crumbs_to_top(),
         Msg::ScrollCrumbsUp => model.scroll_crumbs_up(),
         Msg::ScrollHelpDown => model.scroll_help_down(),
         Msg::ScrollHelpUp => model.scroll_help_up(),
@@ -79,6 +81,8 @@ pub fn update(model: &mut Model, msg: Msg) -> Vec<Cmd> {
                 model.user_msg = Some(UserMsg::error(format!("archiving session failed: {error}")));
             }
         },
+        Msg::SelectFirstSession => model.sessions.select_first(),
+        Msg::SelectLastSession => model.sessions.select_last(),
         Msg::SelectNextSession => model.sessions.select_next(),
         Msg::SelectNextTheme => {
             model.theme = model.theme.next();
