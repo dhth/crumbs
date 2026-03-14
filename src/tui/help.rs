@@ -19,6 +19,7 @@ Sessions Pane
 
   j / down               select next session
   k / up                 select previous session
+  x                      archive selected session
   J                      scroll crumbs down
   K                      scroll crumbs up
 

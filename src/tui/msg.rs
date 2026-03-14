@@ -5,6 +5,7 @@ use ratatui::crossterm::event::{Event, KeyCode, KeyEventKind, KeyModifiers};
 
 pub enum Msg {
     // user actions
+    ArchiveSelectedSession,
     FocusNextPane,
     FocusPreviousPane,
     GoBackOrQuit,
@@ -23,6 +24,10 @@ pub enum Msg {
     CrumbsLoaded {
         session_id: i64,
         result: Result<Vec<Crumb>, String>,
+    },
+    SessionArchived {
+        session_id: i64,
+        result: Result<bool, String>,
     },
     RefreshCrumbs(i64),
     RefreshSessions,
@@ -76,6 +81,10 @@ pub fn get_event_handling_msg(model: &Model, event: Event) -> Option<Msg> {
                     },
                     KeyCode::Char('K') => match model.active_pane {
                         Pane::Sessions => Some(Msg::ScrollCrumbsUp),
+                        Pane::Crumbs | Pane::Metadata | Pane::Help => None,
+                    },
+                    KeyCode::Char('x') => match model.active_pane {
+                        Pane::Sessions => Some(Msg::ArchiveSelectedSession),
                         Pane::Crumbs | Pane::Metadata | Pane::Help => None,
                     },
                     KeyCode::Char('?') => Some(Msg::OpenHelp),

@@ -127,6 +127,7 @@ pub struct Session {
     pub path: String,
     pub branch: Option<String>,
     pub state: SessionState,
+    pub archived_at: Option<i64>,
     pub created_at: i64,
     pub updated_at: i64,
 }

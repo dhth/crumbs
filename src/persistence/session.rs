@@ -1,6 +1,15 @@
 use crate::domain::{Session, SessionState, SessionToSave};
 use sqlx::{Pool, Sqlite};
 
+#[allow(dead_code)]
+#[derive(Debug, thiserror::Error)]
+pub enum ArchiveSessionError {
+    #[error("session with id '{0}' does not exist")]
+    SessionDoesNotExist(i64),
+    #[error(transparent)]
+    Sqlx(#[from] sqlx::Error),
+}
+
 pub async fn create_session(
     pool: &Pool<Sqlite>,
     session: SessionToSave,
@@ -59,9 +68,11 @@ pub async fn get_sessions(pool: &Pool<Sqlite>) -> Result<Vec<Session>, sqlx::Err
             path,
             branch,
             state as "state: SessionState",
+            archived_at,
             created_at,
             updated_at
         FROM sessions
+        WHERE archived_at IS NULL
         ORDER BY updated_at DESC
         "#
     )
@@ -69,4 +80,44 @@ pub async fn get_sessions(pool: &Pool<Sqlite>) -> Result<Vec<Session>, sqlx::Err
     .await?;
 
     Ok(sessions)
+}
+
+#[allow(dead_code)]
+pub async fn archive_session(
+    pool: &Pool<Sqlite>,
+    session_id: i64,
+    archived_at: i64,
+) -> Result<bool, ArchiveSessionError> {
+    let result = sqlx::query!(
+        r#"
+        UPDATE sessions
+        SET archived_at = ?
+        WHERE id = ? AND archived_at IS NULL
+        "#,
+        archived_at,
+        session_id,
+    )
+    .execute(pool)
+    .await?;
+
+    if result.rows_affected() == 1 {
+        return Ok(true);
+    }
+
+    let session_exists = sqlx::query!(
+        r#"
+        SELECT id
+        FROM sessions
+        WHERE id = ?
+        "#,
+        session_id,
+    )
+    .fetch_optional(pool)
+    .await?;
+
+    if session_exists.is_none() {
+        return Err(ArchiveSessionError::SessionDoesNotExist(session_id));
+    }
+
+    Ok(false)
 }

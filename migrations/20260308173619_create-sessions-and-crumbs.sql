@@ -6,6 +6,7 @@ CREATE TABLE sessions (
     path TEXT NOT NULL,
     branch TEXT,
     state TEXT NOT NULL,
+    archived_at INTEGER,
     created_at INTEGER NOT NULL,
     updated_at INTEGER NOT NULL
 );
