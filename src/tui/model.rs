@@ -174,6 +174,24 @@ impl Sessions {
         self.clear_selected_marker();
     }
 
+    pub fn remove_session(&mut self, session_id: i64) -> bool {
+        let Some(index) = self.index_of_session(session_id) else {
+            return false;
+        };
+
+        self.items.remove(index);
+
+        let selected = match self.selected_index() {
+            Some(_) if self.is_empty() => None,
+            Some(selected_index) if selected_index > index => Some(selected_index - 1),
+            Some(selected_index) => Some(selected_index.min(self.len().saturating_sub(1))),
+            None => None,
+        };
+
+        self.state.select(selected);
+        true
+    }
+
     pub fn select_next(&mut self) {
         if self.is_empty() {
             return;
@@ -321,12 +339,20 @@ impl Model {
         self.sessions.set_items(sessions);
     }
 
+    pub fn remove_session(&mut self, session_id: i64) -> bool {
+        self.sessions.remove_session(session_id)
+    }
+
     pub fn toggle_time_display_mode(&mut self) {
         self.time_display_mode = self.time_display_mode.toggle();
     }
 
     pub fn cache_crumbs(&mut self, session_id: i64, crumbs: Vec<Crumb>) {
         self.crumb_cache.insert(session_id, crumbs);
+    }
+
+    pub fn remove_cached_crumbs(&mut self, session_id: i64) {
+        self.crumb_cache.remove(&session_id);
     }
 
     pub fn mark_crumb_load_in_flight(&mut self, session_id: i64) {
@@ -351,6 +377,10 @@ impl Model {
 
     pub fn has_crumb_load_in_flight(&self, session_id: i64) -> bool {
         self.crumb_loads_in_flight.contains(&session_id)
+    }
+
+    pub fn has_session(&self, session_id: i64) -> bool {
+        self.sessions.index_of_session(session_id).is_some()
     }
 
     pub fn current_crumbs(&self) -> Option<&[Crumb]> {

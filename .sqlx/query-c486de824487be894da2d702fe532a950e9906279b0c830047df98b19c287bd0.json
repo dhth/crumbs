@@ -1,6 +1,6 @@
 {
   "db_name": "SQLite",
-  "query": "\n        SELECT\n            id,\n            agent_name,\n            title,\n            project_name,\n            path,\n            branch,\n            state as \"state: SessionState\",\n            created_at,\n            updated_at\n        FROM sessions\n        ORDER BY updated_at DESC\n        ",
+  "query": "\n        SELECT\n            id,\n            agent_name,\n            title,\n            project_name,\n            path,\n            branch,\n            state as \"state: SessionState\",\n            archived_at,\n            created_at,\n            updated_at\n        FROM sessions\n        WHERE archived_at IS NULL\n        ORDER BY updated_at DESC\n        ",
   "describe": {
     "columns": [
       {
@@ -39,13 +39,18 @@
         "type_info": "Text"
       },
       {
-        "name": "created_at",
+        "name": "archived_at",
         "ordinal": 7,
         "type_info": "Integer"
       },
       {
-        "name": "updated_at",
+        "name": "created_at",
         "ordinal": 8,
+        "type_info": "Integer"
+      },
+      {
+        "name": "updated_at",
+        "ordinal": 9,
         "type_info": "Integer"
       }
     ],
@@ -60,9 +65,10 @@
       false,
       true,
       false,
+      true,
       false,
       false
     ]
   },
-  "hash": "449d5ba79f4971e20dd4da7b63339ad300ebc464378d529ed5cc5a0bfab1c1bc"
+  "hash": "c486de824487be894da2d702fe532a950e9906279b0c830047df98b19c287bd0"
 }

@@ -11,20 +11,27 @@ pub fn update(model: &mut Model, msg: Msg) -> Vec<Cmd> {
     let mut cmds = Vec::new();
 
     match msg {
+        Msg::ArchiveSelectedSession => {
+            if let Some(session_id) = model.sessions.selected_session_id() {
+                cmds.push(Cmd::ArchiveSession { session_id });
+            }
+        }
         Msg::CrumbsLoaded { session_id, result } => {
             model.clear_crumb_load_in_flight(session_id);
 
-            match result {
-                Ok(crumbs) => {
-                    model.cache_crumbs(session_id, crumbs.clone());
+            if model.has_session(session_id) {
+                match result {
+                    Ok(crumbs) => {
+                        model.cache_crumbs(session_id, crumbs);
 
-                    if model.sessions.selected_session_id() == Some(session_id) {
-                        model.recompute_crumbs_scroll_bounds();
+                        if model.sessions.selected_session_id() == Some(session_id) {
+                            model.recompute_crumbs_scroll_bounds();
+                        }
                     }
-                }
-                Err(error) => {
-                    model.user_msg =
-                        Some(UserMsg::error(format!("loading crumbs failed: {error}")));
+                    Err(error) => {
+                        model.user_msg =
+                            Some(UserMsg::error(format!("loading crumbs failed: {error}")));
+                    }
                 }
             }
         }
@@ -54,6 +61,24 @@ pub fn update(model: &mut Model, msg: Msg) -> Vec<Cmd> {
         Msg::ScrollCrumbsUp => model.scroll_crumbs_up(),
         Msg::ScrollHelpDown => model.scroll_help_down(),
         Msg::ScrollHelpUp => model.scroll_help_up(),
+        Msg::SessionArchived {
+            session_id: archived_session_id,
+            result,
+        } => match result {
+            Ok(_) => {
+                model.remove_session(archived_session_id);
+                model.remove_cached_crumbs(archived_session_id);
+                model.clear_crumb_load_in_flight(archived_session_id);
+
+                model.user_msg = Some(UserMsg::info(format!(
+                    "archived session {archived_session_id}"
+                )));
+                cmds.push(Cmd::LoadSessions);
+            }
+            Err(error) => {
+                model.user_msg = Some(UserMsg::error(format!("archiving session failed: {error}")));
+            }
+        },
         Msg::SelectNextSession => model.sessions.select_next(),
         Msg::SelectNextTheme => {
             model.theme = model.theme.next();
@@ -92,25 +117,26 @@ pub fn update(model: &mut Model, msg: Msg) -> Vec<Cmd> {
         Msg::ToggleTimeDisplayMode => model.toggle_time_display_mode(),
     }
 
-    if model.sessions.selected_session_id() != previous_selected_session_id {
-        match model.sessions.selected_session_id() {
-            Some(_) => {
-                if let Some(session) = model.sessions.selected_session() {
-                    model.set_metadata_pane_contents(MetadataPaneContents::from(session));
-                    model.recompute_crumbs_scroll_bounds();
-                } else {
-                    model.clear_metadata_pane_contents();
-                }
-            }
-            None => {
-                model.refresh_crumbs_scroll();
-                model.clear_metadata_pane_contents();
-            }
+    match (
+        model.sessions.selected_session(),
+        previous_selected_session_id,
+    ) {
+        (None, Some(_)) => {
+            model.clear_metadata_pane_contents();
+            model.refresh_crumbs_scroll();
         }
-    } else if let Some(session) = model.sessions.selected_session() {
-        model.set_metadata_pane_contents(MetadataPaneContents::from(session));
-    } else {
-        model.clear_metadata_pane_contents();
+        (Some(selected_session), Some(previous)) if selected_session.id != previous => {
+            model.set_metadata_pane_contents(MetadataPaneContents::from(selected_session));
+            model.refresh_crumbs_scroll();
+        }
+        (Some(selected_session), None) => {
+            model.set_metadata_pane_contents(MetadataPaneContents::from(selected_session));
+            model.refresh_crumbs_scroll();
+        }
+        (Some(selected_session), _) => {
+            model.set_metadata_pane_contents(MetadataPaneContents::from(selected_session));
+        }
+        (None, None) => {}
     }
 
     cmds.extend(prefetch_crumbs_commands(model));

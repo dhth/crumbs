@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        UPDATE sessions\n        SET archived_at = ?\n        WHERE id = ? AND archived_at IS NULL\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "21d3f68df2631e987d03c103ebe5d27a93ca87310f3dfb655b13a851da055c2e"
+}

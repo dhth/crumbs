@@ -29,6 +29,7 @@ Expected fields include:
 - `path`
 - `branch` nullable
 - `state`
+- `archived_at` nullable
 - `created_at`
 - `updated_at`
 
@@ -36,6 +37,9 @@ Notes:
 - `session_id` is the primary stable identity for a session.
 - It is stored as an integer and can map directly to the SQLite primary key.
 - `updated_at` reflects the timestamp of the latest accepted crumb.
+- `archived_at` is nullable and supports soft archiving for sessions.
+- default session queries return only active sessions where `archived_at` is
+  `NULL`.
 - `branch` is nullable because not every working directory is on a git
   branch.
 

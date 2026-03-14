@@ -36,3 +36,5 @@ This keeps the dashboard simple:
 - Fine-grained work descriptions belong in updates, not in the state enum.
 - The tool may later derive additional signals such as staleness, but those are
   separate from the core lifecycle state model.
+- Archiving is separate from lifecycle state. A session can be archived without
+  changing whether its last known state was `working`, `blocked`, or `done`.

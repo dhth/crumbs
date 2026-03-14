@@ -7,6 +7,7 @@ alias i := install
 alias l := lint
 alias lf := lint-fix
 alias r := run
+alias rt := run-test
 alias t := test
 
 export DATABASE_URL := 'sqlite://db/crumbs.db'
@@ -54,6 +55,14 @@ publish-dry:
 
 run *ARGS:
     cargo run -- {{ ARGS }}
+
+run-test *ARGS:
+    cargo run -- --db-path /var/tmp/crumbs/test.db {{ ARGS }}
+
+init-test-db:
+    rm -f /var/tmp/crumbs/test.db
+    just build
+    ./scripts/init-test-db.sh ./target/debug/crumbs
 
 test:
     cargo test
