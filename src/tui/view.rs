@@ -119,11 +119,14 @@ fn render_crumbs_pane(model: &Model, frame: &mut Frame, area: Rect, theme: &Them
 
         frame.render_widget(widget, area);
     } else {
+        let visible_height = usize::from(area.height.saturating_sub(3));
+
         let rows: Vec<Row> = model
             .current_crumbs()
             .into_iter()
             .flatten()
             .skip(model.crumbs_scroll())
+            .take(visible_height)
             .map(|crumb| crumb_row(crumb, theme))
             .collect();
 
