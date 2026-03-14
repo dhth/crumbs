@@ -134,14 +134,6 @@ default opening experience.
 
 Read `src/tui/help.rs`.
 
-For the current archive prototype:
-
-- pressing `x` in the sessions pane archives the selected session
-- archive is soft delete only, so archived sessions disappear from the default
-  sessions list without removing their stored crumbs
-- after a successful archive, the TUI reloads sessions from storage instead of
-  treating the in-memory list as the source of truth
-
 ## Themes
 
 The TUI ships with nine built-in color themes. The starting theme can be set

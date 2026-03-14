@@ -19,14 +19,18 @@ Sessions Pane
 
   j / down               select next session
   k / up                 select previous session
+  g                      select first session
+  G                      select last session
   x                      archive selected session
   J                      scroll crumbs down
   K                      scroll crumbs up
 
 Crumbs Pane
 
-  j / down               scroll crumbs down
-  k / up                 scroll crumbs up
+  j / down               scroll down
+  k / up                 scroll up
+  g                      scroll to the top
+  G                      scroll to the bottom
 "#;
 
 pub fn help_line_count() -> usize {

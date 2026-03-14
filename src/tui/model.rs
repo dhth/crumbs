@@ -208,6 +208,22 @@ impl Sessions {
         }
     }
 
+    pub fn select_first(&mut self) {
+        if self.is_empty() {
+            return;
+        }
+
+        self.state.select(Some(0));
+    }
+
+    pub fn select_last(&mut self) {
+        if self.is_empty() {
+            return;
+        }
+
+        self.state.select(Some(self.len() - 1));
+    }
+
     pub fn select_previous(&mut self) {
         if self.is_empty() {
             return;
@@ -411,12 +427,20 @@ impl Model {
         self.crumbs_scroll = (self.crumbs_scroll + 1).min(self.max_crumbs_scroll_available);
     }
 
+    pub fn scroll_crumbs_to_bottom(&mut self) {
+        self.crumbs_scroll = self.max_crumbs_scroll_available;
+    }
+
+    pub fn scroll_crumbs_to_top(&mut self) {
+        self.crumbs_scroll = 0;
+    }
+
     pub fn scroll_crumbs_up(&mut self) {
         self.crumbs_scroll = self.crumbs_scroll.saturating_sub(1);
     }
 
     pub fn refresh_crumbs_scroll(&mut self) {
-        self.crumbs_scroll = 0;
+        self.scroll_crumbs_to_top();
         self.recompute_crumbs_scroll_bounds();
     }
 
