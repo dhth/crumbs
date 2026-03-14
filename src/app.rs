@@ -9,6 +9,11 @@ use std::path::{Path, PathBuf};
 pub async fn run() -> Result<(), AppError> {
     let args = Args::parse();
 
+    if let CrumbsCommand::WriteSkill = args.command {
+        crate::cmds::handle_write_skill()?;
+        return Ok(());
+    }
+
     let crumbs_db_url = get_db_url(args.db_path)?;
     let pool = get_db_pool(&crumbs_db_url).await?;
 
@@ -33,6 +38,7 @@ pub async fn run() -> Result<(), AppError> {
         CrumbsCommand::Tui { theme } => {
             crate::cmds::handle_tui(pool, theme).await?;
         }
+        CrumbsCommand::WriteSkill => {}
     }
 
     Ok(())
