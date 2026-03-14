@@ -1,0 +1,33 @@
+Keymaps
+
+General
+
+  <tab> / <S-tab>        move focus between panes
+  ?                      open or close help view
+  <Esc> / q              go back or quit
+  <Ctrl+c>               quit immediately
+
+Main View
+
+  [                      select previous session
+  ]                      select next session
+  {                      select previous theme
+  }                      select next theme
+  t                      toggle time display
+
+Sessions Pane
+
+  j / down               select next session
+  k / up                 select previous session
+  J                      scroll crumbs down
+  K                      scroll crumbs up
+  G                      select last session
+  g                      select first session
+  x                      archive selected session
+
+Crumbs Pane
+
+  j / down               scroll down
+  k / up                 scroll up
+  G                      scroll to the bottom
+  g                      scroll to the top
