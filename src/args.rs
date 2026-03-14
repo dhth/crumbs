@@ -54,6 +54,8 @@ pub enum CrumbsCommand {
         #[arg(short = 't', long = "theme", value_enum, default_value_t = ThemeName::default())]
         theme: ThemeName,
     },
+    /// write a SKILL.md for crumbs in the current directory
+    WriteSkill,
 }
 
 fn parse_db_path(value: &str) -> Result<PathBuf, String> {

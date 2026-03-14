@@ -1,4 +1,6 @@
-use crate::cmds::{ListCrumbsError, ListSessionsError, LogCrumbError, RegisterSessionError};
+use crate::cmds::{
+    ListCrumbsError, ListSessionsError, LogCrumbError, RegisterSessionError, WriteSkillError,
+};
 use crate::persistence::{AddCrumbError, DBPoolError, GetCrumbsError};
 
 #[derive(Debug, thiserror::Error)]
@@ -13,6 +15,8 @@ pub enum AppError {
     ListSessions(#[from] ListSessionsError),
     #[error(transparent)]
     ListCrumbs(#[from] ListCrumbsError),
+    #[error(transparent)]
+    WriteSkill(#[from] WriteSkillError),
     #[error(transparent)]
     Unexpected(#[from] anyhow::Error),
 }
@@ -48,6 +52,16 @@ impl AppError {
                     GetCrumbsError::Sqlx(_) => None,
                 },
                 ListCrumbsError::Unexpected(_) => None,
+            },
+            AppError::WriteSkill(write_skill_error) => match write_skill_error {
+                WriteSkillError::CouldntGetCwd(_) => Some(
+                    "Tip: Make sure the current working directory exists and is accessible, then try again.",
+                ),
+                WriteSkillError::SkillFileAlreadyExists(_) => Some(
+                    "Tip: Remove or rename the existing file, then run 'crumbs write-skill' again.",
+                ),
+                WriteSkillError::CouldntCreateSkillDirectory { .. } => None,
+                WriteSkillError::CouldntWriteSkillFile { .. } => None,
             },
             AppError::Unexpected(_) => None,
         }
