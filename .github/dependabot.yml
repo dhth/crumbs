@@ -3,7 +3,8 @@ updates:
   - package-ecosystem: cargo
     directory: "/"
     schedule:
-      interval: monthly
+      interval: cron
+      cronjob: "0 0,2,4,6 * * 3"
     groups:
       patch-updates:
         update-types: ["patch"]
@@ -16,7 +17,8 @@ updates:
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: monthly
+      interval: cron
+      cronjob: "0 0,2,4,6 * * 3"
     labels:
       - "dependencies"
     commit-message:
